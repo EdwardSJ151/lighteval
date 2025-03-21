@@ -1,3 +1,15 @@
+# Lighteval Fork for Portuguese Benchmark
+
+## Evaluation Tasks Definitions:
+Tasks are defined in the following format `pt_benchmark|{task_name}|{few_shot}|{truncate_few_shots}`
+
+## Creating a Task:
+
+1. Implement the task as a new file in the `pt_benchmark/` dir. Follow the existing lighteval task implementation as reference.
+2. Add the task in the `TASK_TABLE` constant in the `community_tasks/filbench_evals.py` file. 
+3. Ensure that nothing is amiss&mdash; inspect the task using `python -m lighteval tasks inspect` to examine a single sample.
+4. If everything looks good, add the task string, i.e., `ptbench|{task_name}|{few_shot}|{truncate_few_shots}` in the `examples/tasks/all_filbench_tasks.txt` file.
+
 <p align="center">
   <br/>
     <img alt="lighteval library logo" src="./assets/lighteval-doc.svg" width="376" height="59" style="max-width: 100%;">
