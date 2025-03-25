@@ -8,7 +8,9 @@ from lighteval.metrics.metrics import Metric, MetricCategory, Metrics
 from lighteval.metrics.utils.metric_utils import MetricUseCase
 
 from lighteval.tasks.lighteval_task import LightevalTaskConfig
+from lighteval.tasks.templates.utils.translation_literals import TRANSLATION_LITERALS
 from lighteval.tasks.multilingual.utils.task_utils import get_metrics_for_formulation
+from lighteval.tasks.templates.utils.formatting_utils import capitalize
 from lighteval.tasks.templates.multichoice import get_mcq_prompt_function
 from lighteval.tasks.templates.utils.formulation import (
     CFFormulation,
@@ -22,14 +24,27 @@ ENEM_SUBSETS = ["2022", "2023", "2024"]
 
 def enem_pfn(line, task_name: str = None):
     """Prompt function for ENEM dataset."""
+    translation_literals = TRANSLATION_LITERALS[Language.PORTUGUESE]
+    answer_word = capitalize(translation_literals.answer)
     instruction = ""
     
-    # Combine question and description to form the complete question
-    full_question = line["question"]
+    description = ""
     if "description" in line and line["description"]:
-        full_question = f"{line['description']}\n\n{full_question}"
+        # Removing empty list brackets
+        if isinstance(line["description"], list):
+            if line["description"]:  # Only process non-empty lists
+                description = "\n".join(str(item) for item in line["description"])
+        else:
+            description = str(line["description"])
     
-    # Get all the alternatives
+    # Format question
+    question = line["question"]
+    question = question.replace("[[placeholder]]", "").strip()
+    if description:
+        query = f"{description}\n\nPergunta: {question}\n"
+    else:
+        query = f"Pergunta: {question}\n"
+    
     choices = [
         line["alternative_a"],
         line["alternative_b"],
@@ -38,15 +53,15 @@ def enem_pfn(line, task_name: str = None):
         line["alternative_e"],
     ]
     
-    # Valid keys are the option letters
     valid_keys = ["A", "B", "C", "D", "E"]
     
-    # Get the gold index from the label
     answer_index = line["label"]
+    answer_index = [answer_index] # Make to a list
     
     # Build the query with question and options
     options_text = "\n".join([f"{key}. {choice}" for key, choice in zip(valid_keys, choices)])
-    query = f"{instruction}{full_question}\n\n{options_text}\Resposta:"
+    query = f"{query}{options_text}\n"
+
     
     return Doc(
         task_name=task_name,
@@ -54,6 +69,7 @@ def enem_pfn(line, task_name: str = None):
         choices=valid_keys,
         gold_index=answer_index,
         instruction=instruction,
+        unconditioned_query=f"{answer_word}{translation_literals.colon}",
     )
 
 def get_enem_prompt_function():
@@ -68,7 +84,7 @@ def get_enem_prompt_function():
         return str(desc_list)
     
     def format_text(text):
-        """Format any text field, handling lists if needed"""
+        """For handling lists to be formatted as a string"""
         if isinstance(text, list):
             return "\n".join(str(item) for item in text)
         return str(text)
@@ -101,7 +117,8 @@ class ENEMTask(LightevalTaskConfig):
         super().__init__(
             name=name,
             hf_subset=hf_subset,
-            prompt_function=get_enem_prompt_function(),
+            prompt_function=enem_pfn,
+            # prompt_function=get_enem_prompt_function(),
             hf_repo="EdwardSJ151/enem-lighteval", # "MBZUAI/ArabicMMLU",
             metric=[Metrics.loglikelihood_acc_norm],
             hf_avail_splits=["test"],
