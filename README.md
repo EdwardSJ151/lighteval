@@ -1,7 +1,11 @@
 # Lighteval Fork for Portuguese Benchmark
 
 ## Setup
-pip install -e .[adapters,math]
+`pip install -e .[adapters,math,dev]`
+
+or for a full install
+
+`pip install -e .[quantization,vllm,tensorboardX,adapters,math,dev]`
 
 ## Evaluation Tasks Definitions:
 Tasks are defined in the following format `pt_benchmark|{task_name}|{few_shot}|{truncate_few_shots}`
@@ -11,7 +15,7 @@ Tasks are defined in the following format `pt_benchmark|{task_name}|{few_shot}|{
 1. Implement the task as a new file in the `pt_benchmark/` dir. Follow the existing lighteval task implementation as reference.
 2. Add the task in the `TASK_TABLE` constant in the `community_tasks/pt_evals.py` file. 
 3. Ensure that nothing is amiss&mdash; inspect the task using `python -m lighteval tasks inspect` to examine a single sample.
-E.g. `python -m lighteval tasks inspect "community|ENEM:2022|0|0"   --num-samples 1   --custom-tasks community_tasks/pt_evals.py`
+E.g. `python -m lighteval tasks inspect "ptbench|ENEM:2022|0|0"   --num-samples 1   --custom-tasks community_tasks/pt_evals.py`
 
 python -m lighteval tasks inspect "helm|mmlu:astronomy|0|0"   --num-samples 1   --custom-tasks src/lighteval/tasks/multilingual/tasks.py
 
@@ -19,9 +23,9 @@ python -m lighteval tasks inspect "helm|mmlu:astronomy|0|0"   --num-samples 1   
 
 # Running a Task on a Model:
 ```
-lighteval accelerate \
+python -m lighteval accelerate \
     "pretrained=TucanoBR/Tucano-1b1" \
-    "community|ENEM:2022|0|0" \
+    "ptbench|ENEM:2022|0|0" \
     --custom-tasks community_tasks/pt_evals.py
 ```
 
