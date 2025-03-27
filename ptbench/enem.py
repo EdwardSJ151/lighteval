@@ -10,7 +10,7 @@ from lighteval.metrics.utils.metric_utils import MetricUseCase
 from lighteval.tasks.lighteval_task import LightevalTaskConfig
 from lighteval.tasks.templates.utils.translation_literals import TRANSLATION_LITERALS
 from lighteval.tasks.multilingual.utils.task_utils import get_metrics_for_formulation
-from lighteval.tasks.templates.utils.formatting_utils import capitalize
+from lighteval.tasks.templates.utils.formatting_utils import capitalize, char_to_num
 from lighteval.tasks.templates.multichoice import get_mcq_prompt_function
 from lighteval.tasks.templates.utils.formulation import (
     CFFormulation,
@@ -56,7 +56,7 @@ def enem_pfn(line, task_name: str = None):
     valid_keys = ["A", "B", "C", "D", "E"]
     
     answer_index = line["label"]
-    answer_index = [answer_index] # Make to a list
+    answer_index = [char_to_num(answer_index)] # Make to a list
     
     # Build the query with question and options
     options_text = "\n".join([f"{key}. {choice}" for key, choice in zip(valid_keys, choices)])
@@ -101,7 +101,7 @@ def get_enem_prompt_function():
                 format_text(line["alternative_d"]),
                 format_text(line["alternative_e"]),
             ],
-            "gold_idx": line["label"],
+            "gold_idx": char_to_num(line["label"]),
             "instruction": ""
         },
         formulation=MCFFormulation()
