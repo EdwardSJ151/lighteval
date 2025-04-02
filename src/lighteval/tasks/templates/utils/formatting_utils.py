@@ -95,3 +95,8 @@ def fix_capitalization(prefix: str, text: str, translation_literals: Translation
         return capitalize(text)
 
     return capitalize(text) if punctuation_ends_sentence(prefix, translation_literals) else decapitalize(text)
+
+
+def char_to_num(letter):
+    mapping = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4}
+    return mapping.get(letter, None)
