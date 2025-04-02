@@ -23,10 +23,10 @@ from lighteval.utils.language import Language
 ENEM_SUBSETS = ["2022", "2023", "2024"]
 
 def enem_pfn(line, task_name: str = None):
-    """Prompt function for ENEM dataset."""
+    """Prompt function para o dataset do ENEM."""
     translation_literals = TRANSLATION_LITERALS[Language.PORTUGUESE]
     answer_word = capitalize(translation_literals.answer)
-    instruction = ""
+    instruction = "As perguntas a seguir são questões de múltipla escolha do Exame Nacional do Ensino Médio (ENEM), selecione a única alternativa correta e responda apenas com as letras \"A\", \"B\", \"C\", \"D\" ou \"E\".\n\n"
     
     description = ""
     if "description" in line and line["description"]:
@@ -40,10 +40,12 @@ def enem_pfn(line, task_name: str = None):
     # Format question
     question = line["question"]
     question = question.replace("[[placeholder]]", "").strip()
+
+    query = instruction
     if description:
-        query = f"{description}\n\nPergunta: {question}\n"
+        query += f"{description}\n\nPergunta: {question}\n"
     else:
-        query = f"Pergunta: {question}\n"
+        query += f"Pergunta: {question}\n"
     
     choices = [
         line["alternative_a"],
@@ -116,17 +118,17 @@ class ENEMTask(LightevalTaskConfig):
     ):
         super().__init__(
             name=name,
-            hf_subset=hf_subset,
-            # prompt_function=enem_pfn,
-            prompt_function=get_enem_prompt_function(),
+            suite=["ptbench"],
+            prompt_function=enem_pfn,
+            # prompt_function=get_enem_prompt_function(),
             hf_repo="EdwardSJ151/enem-lighteval", # "MBZUAI/ArabicMMLU",
-            metric=[Metrics.loglikelihood_acc_norm],
+            hf_subset=hf_subset,
             hf_avail_splits=["test"],
             evaluation_splits=["test"],
             few_shots_split=None,
             few_shots_select=None,
-            suite=["ptbench"],
             generation_size=-1,
+            metric=[Metrics.loglikelihood_acc_norm],
             stop_sequence=None,
             trust_dataset=True,
             version=0,

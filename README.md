@@ -13,7 +13,7 @@ Tasks are defined in the following format `pt_benchmark|{task_name}|{few_shot}|{
 ## Creating a Task:
 
 1. Implement the task as a new file in the `pt_benchmark/` dir. Follow the existing lighteval task implementation as reference.
-2. Add the task in the `TASK_TABLE` constant in the `community_tasks/pt_evals.py` file. 
+2. Add the task in the `TASK_TABLE` constant in the `community_tasks/pt_evals.py` file.
 3. Ensure that nothing is amiss&mdash; inspect the task using `python -m lighteval tasks inspect` to examine a single sample.
 E.g. `python -m lighteval tasks inspect "ptbench|ENEM:2022|0|0"   --num-samples 1   --custom-tasks community_tasks/pt_evals.py`
 
