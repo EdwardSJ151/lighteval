@@ -8,7 +8,37 @@ from lighteval.tasks.requests import Doc
 from lighteval.utils.language import Language
 
 def assin2rte_pfn(line, task_name: str = None):
-    return NotImplemented
+    """Prompt function para o dataset do assin2 rte."""
+
+    # Definindo algumas variaveis que são padrão para o Lighteval
+    translation_literals = TRANSLATION_LITERALS[Language.PORTUGUESE]
+    answer_word = capitalize(translation_literals.answer)
+
+    # Definindo a instrução para o Lighteval
+    instruction = "Abaixo estão pares de pergunta e resposta. Para cada par, você deve julgar se a resposta responde à pergunta de maneira satisfatória e aparenta estar correta. Selecione entre apenas os seguintes números: 1 (Pode ser inferida) e 0 (Não pode ser inferida).\n\n"
+
+    premise = line["sentence1"]
+    hypothesis = line["sentence2"]
+
+    query = instruction
+    query += f"Premissa: {premise}\n\Hipótese: {hypothesis}\n\nPergunta: Pergunta: A hipótese pode ser inferida pela premissa?\n"
+
+    valid_keys = ["0", "1"]
+
+    answer_index = line["label"]
+    answer_index = [answer_index] # Indice da resposta correta em formato de lista
+
+    query = f"{query}\n"
+
+
+    return Doc(
+        task_name=task_name,
+        query=query,
+        choices=valid_keys,
+        gold_index=answer_index,
+        instruction=instruction,
+        unconditioned_query=f"{answer_word}{translation_literals.colon}",
+    )
 
 assin2rte_task = LightevalTaskConfig(
     name="assin2rte",

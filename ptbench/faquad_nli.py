@@ -8,7 +8,37 @@ from lighteval.tasks.requests import Doc
 from lighteval.utils.language import Language
 
 def faquad_nli_pfn(line, task_name: str = None):
-    return NotImplemented
+    """Prompt function para o dataset do faquad nli."""
+
+    # Definindo algumas variaveis que são padrão para o Lighteval
+    translation_literals = TRANSLATION_LITERALS[Language.PORTUGUESE]
+    answer_word = capitalize(translation_literals.answer)
+
+    # Definindo a instrução para o Lighteval
+    instruction = "Abaixo estão pares de pergunta e resposta. Para cada par, você deve julgar se a resposta responde à pergunta de maneira satisfatória e aparenta estar correta. Selecione entre apenas os seguintes números: 1 (Satisfaz) e 0 (Não Satisfaz).\n\n"
+
+    pergunta = line["question"]
+    resposta = line["answer"]
+
+    query = instruction
+    query += f"Pergunta: {pergunta}\n\nResposta: {resposta}\n\nA resposta dada satisfaz à pergunta?\n"
+
+    valid_keys = ["0", "1"]
+
+    answer_index = line["label"]
+    answer_index = [answer_index] # Indice da resposta correta em formato de lista
+
+    query = f"{query}\n"
+
+
+    return Doc(
+        task_name=task_name,
+        query=query,
+        choices=valid_keys,
+        gold_index=answer_index,
+        instruction=instruction,
+        unconditioned_query=f"{answer_word}{translation_literals.colon}",
+    )
 
 faquad_nli_task = LightevalTaskConfig(
     name="faquad_nli",
