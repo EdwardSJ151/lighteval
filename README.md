@@ -16,17 +16,15 @@ Tasks are defined in the following format `pt_benchmark|{task_name}|{few_shot}|{
 2. Add the task in the `TASK_TABLE` constant in the `community_tasks/pt_evals.py` file.
 3. Ensure that nothing is amiss&mdash; inspect the task using `python -m lighteval tasks inspect` to examine a single sample.
 E.g. `python -m lighteval tasks inspect "ptbench|enem|3|0"   --num-samples 1   --custom-tasks community_tasks/pt_evals.py`
-
-python -m lighteval tasks inspect "helm|mmlu:astronomy|0|0"   --num-samples 1   --custom-tasks src/lighteval/tasks/multilingual/tasks.py
-
 4. If everything looks good, add the task string, i.e., `ptbench|{task_name}|{few_shot}|{truncate_few_shots}` in the `examples/tasks/all_ptbench_tasks.txt` file.
 
 # Running a Task on a Model:
 ```
 python -m lighteval accelerate \
     "pretrained=TucanoBR/Tucano-1b1" \
-    "ptbench|ENEM:2022|0|0" \
-    --custom-tasks community_tasks/pt_evals.py
+    "ptbench|pt_hate_speech|25|1" \
+    --custom-tasks community_tasks/pt_evals.py \
+    --save-details
 ```
 
 <p align="center">

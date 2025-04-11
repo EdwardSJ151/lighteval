@@ -1,1 +1,2 @@
 ptbench|enem|3|0
+ptbench|pt_hate_speech|25|1
