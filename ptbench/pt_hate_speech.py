@@ -15,13 +15,13 @@ def pt_hate_speech_pfn(line, task_name: str = None):
     answer_word = capitalize(translation_literals.answer)
 
     # Definindo a instrução para o Lighteval
-    instruction = "Abaixo contém o texto de tweets de usuários do Twitter em português, sua tarefa é classificar se o texto contém discurso de ódio ou não. Selecione entre apenas os seguintes números: 1 (Hate Speech) e 0 (Não Hate Speech).\n\n"
+    instruction = "Abaixo contém o texto de tweets de usuários do Twitter em português, sua tarefa é classificar se o texto contém discurso de ódio ou não. Responda com apenas 'Sim' (Hate Speech) ou 'Não' (Não Hate Speech).\n\n"
 
     tweet = line["sentence"]
     query = instruction
     query += f"Texto: {tweet}\n\nPergunta: O texto contém discurso de ódio?\n"
 
-    valid_keys = ["0", "1"]
+    valid_keys = ["Não", "Sim"]
 
     answer_index = line["label"]
     answer_index = [answer_index] # Indice da resposta correta em formato de lista
@@ -50,7 +50,7 @@ pt_hate_speech_task = LightevalTaskConfig(
     few_shots_split="dev",
     few_shots_select="sequential",
     generation_size=-1,
-    metric=[Metrics.f1_score_macro],
+    metric=[Metrics.loglikelihood_acc_norm],
     stop_sequence=None,
     trust_dataset=True,
     version=0,

@@ -15,7 +15,7 @@ def assin2rte_pfn(line, task_name: str = None):
     answer_word = capitalize(translation_literals.answer)
 
     # Definindo a instrução para o Lighteval
-    instruction = "Abaixo estão pares de pergunta e resposta. Para cada par, você deve julgar se a resposta responde à pergunta de maneira satisfatória e aparenta estar correta. Selecione entre apenas os seguintes números: 1 (Pode ser inferida) e 0 (Não pode ser inferida).\n\n"
+    instruction = "Abaixo estão pares de pergunta e resposta. Para cada par, você deve julgar se a resposta responde à pergunta de maneira satisfatória e aparenta estar correta. Responda com apenas 'Sim' (Pode ser inferida) ou 'Não' (Não pode ser inferida).\n\n"
 
     premise = line["sentence1"]
     hypothesis = line["sentence2"]
@@ -23,7 +23,7 @@ def assin2rte_pfn(line, task_name: str = None):
     query = instruction
     query += f"Premissa: {premise}\n\Hipótese: {hypothesis}\n\nPergunta: Pergunta: A hipótese pode ser inferida pela premissa?\n"
 
-    valid_keys = ["0", "1"]
+    valid_keys = ["Não", "Sim"]
 
     answer_index = line["label"]
     answer_index = [answer_index] # Indice da resposta correta em formato de lista
@@ -51,7 +51,7 @@ assin2rte_task = LightevalTaskConfig(
     few_shots_split="dev",
     few_shots_select="sequential",
     generation_size=-1,
-    metric=[Metrics.f1_score_macro],
+    metric=[Metrics.loglikelihood_acc_norm],
     stop_sequence=None,
     trust_dataset=True,
     version=0,
