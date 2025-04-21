@@ -1,1 +1,4 @@
 ptbench|enem|3|0
+ptbench|pt_hate_speech|25|1
+ptbench|assin2rte|15|1
+ptbench|faquad_nli|15|1
